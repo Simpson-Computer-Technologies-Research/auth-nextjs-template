@@ -2,7 +2,7 @@ import { signIn } from "next-auth/react";
 import Button from "./Button";
 import GoogleSvg from "./svgs/GoogleSvg";
 
-export default function SignInButton(props: {
+export default function SignInWithGoogleButton(props: {
   className?: string;
 }): JSX.Element {
   return (
