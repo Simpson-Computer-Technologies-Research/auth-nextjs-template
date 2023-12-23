@@ -2,7 +2,6 @@
 
 import LoadingCenter from "@/components/Loading";
 import MainWrapper from "@/components/MainWrapper";
-import SignInButton from "@/components/SignInButton";
 import { SessionProvider, useSession } from "next-auth/react";
 
 export default function Home() {
@@ -31,7 +30,7 @@ function Main(): JSX.Element {
 
   return (
     <MainWrapper>
-      <SignInButton />
+      <p>Please go to /auth/signin</p>
     </MainWrapper>
   );
 }

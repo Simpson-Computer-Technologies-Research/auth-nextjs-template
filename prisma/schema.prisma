@@ -17,3 +17,7 @@ model User {
   image     String
   secret    String   @unique
 }
+
+// npx prisma migrate dev --name init
+// npx prisma db push
+// npx prisma generate

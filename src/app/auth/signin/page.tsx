@@ -1,6 +1,7 @@
 "use client";
 
 import MainWrapper from "@/components/MainWrapper";
+import SignInWithGoogleButton from "@/components/SignInWithGoogleButton";
 import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -26,12 +27,12 @@ export default function SignInPage() {
       email,
       password,
       callbackUrl,
-      redirect: false,
+      redirect: true,
     });
   };
 
   return (
-    <MainWrapper>
+    <MainWrapper className="gap-2">
       <form
         className="flex flex-col gap-4"
         onSubmit={async (e) => await onSubmit(e)}
@@ -54,6 +55,8 @@ export default function SignInPage() {
           Login
         </button>
       </form>
+
+      <SignInWithGoogleButton />
     </MainWrapper>
   );
 }
