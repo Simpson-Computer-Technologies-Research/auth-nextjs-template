@@ -15,6 +15,22 @@ enum SignUpStatus {
   LOADING,
 }
 
+function userAlreadyExistsApi(email: string) {
+  const encodedEmail = base64encode(email);
+  return fetch(`/api/users/${encodedEmail}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+function sendEmailApi(email: string) {
+  return fetch("/api/email", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+}
+
 export default function SignUpPage() {
   // States for email and password
   const [email, setEmail] = useState("");
@@ -27,29 +43,15 @@ export default function SignUpPage() {
     setStatus(SignUpStatus.LOADING);
 
     // Check if the user already exists
-    const encodedEmail = base64encode(email);
-    const userResponse = await fetch(`/api/users/${encodedEmail}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    console.log(userResponse);
-
-    // If the user already exists, return an error
+    const userResponse = await userAlreadyExistsApi(email);
     if (userResponse.ok) {
-      setStatus(SignUpStatus.USER_EXISTS);
-      return;
+      // If the user already exists, return an error
+      return setStatus(SignUpStatus.USER_EXISTS);
     }
 
-    // Send an api request to the server to create a new user
-    const emailResponse = await fetch("/api/email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-
-    // If the response is ok, redirect to the login page
-    emailResponse.ok
+    // Send an api request to send a verification email to the provided mail address
+    const emailResponse = await sendEmailApi(email);
+    emailResponse.ok // If the response is ok, set the status to success, else to error
       ? setStatus(SignUpStatus.SUCCESS)
       : setStatus(SignUpStatus.ERROR);
   };
@@ -78,16 +80,20 @@ export default function SignUpPage() {
         <SignInWithGoogleButton />
       </form>
 
-      {/* Success/Error messages */}
+      {/* The sign up was a success - they must check their email for verification */}
       {status === SignUpStatus.SUCCESS && (
         <p className="text-green-500">
           An email has been sent to {email}. Check your inbox for a link to
           create your account.
         </p>
       )}
+
+      {/* An error has occurred - most likely an internal error */}
       {status === SignUpStatus.ERROR && (
         <p className="text-red-500">An error has occurred. Please try again.</p>
       )}
+
+      {/* The user already exists - they must sign in to continue */}
       {status === SignUpStatus.USER_EXISTS && (
         <p className="text-red-500">
           An user with this email already exists.{" "}

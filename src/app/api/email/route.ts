@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Response } from "@/lib/responses";
 import { generateEmailAuthorizationUrl } from "@/lib/auth";
 
-async function generateRequestBody(email: string) {
+async function generateEmailRequestBody(email: string) {
   const api_key = process.env.SMTP_PROVIDER_API_KEY;
   const url = await generateEmailAuthorizationUrl(email);
 
@@ -10,9 +10,9 @@ async function generateRequestBody(email: string) {
     api_key,
     to: [`<${email}>`],
     sender: `tristan@simpsonresearch.ca`,
-    subject: "Email Authorization",
-    text_body: `Your password reset link is: ${url}\n\nThis link will expire in 10 minutes.`,
-    html_body: `<p>Your password reset link is: <a href="${url}">${url}</a></p><p>This link will expire in 10 minutes.</p>`,
+    subject: "Account Creation",
+    text_body: `Your account creation link is: ${url}\n\nThis link will expire in 10 minutes.`,
+    html_body: `<p>Your account creation link is: <a href="${url}">${url}</a></p><p>This link will expire in 10 minutes.</p>`,
   };
 }
 
@@ -25,15 +25,13 @@ export async function POST(req: NextRequest) {
 
   // Send an email to the user
   const baseUrl = process.env.SMTP_PROVIDER_BASE_URL;
-  const sendEndpoint = process.env.SMTP_PROVIDER_SEND_ENDPOINT;
-
-  if (!baseUrl || !sendEndpoint) {
+  if (!baseUrl) {
     return NextResponse.json(Response.InternalError, { status: 500 });
   }
 
   // Generate the body and send the http request
-  const body = await generateRequestBody(email);
-  const response = await fetch(`${baseUrl}${sendEndpoint}`, {
+  const body = await generateEmailRequestBody(email);
+  const response = await fetch(`${baseUrl}/email/send`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

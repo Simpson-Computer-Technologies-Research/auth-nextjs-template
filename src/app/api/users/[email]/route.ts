@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
         name: user.name,
         email: user.email,
         image: user.image,
-        permissions: [0],
+        permissions: user.permissions,
       },
       ...Response.Success,
     },

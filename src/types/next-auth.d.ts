@@ -12,6 +12,7 @@ declare module "next-auth" {
     password?: string;
     image: string;
     secret: string | null;
+    permissions: Permission[];
   }
 
   interface Session {

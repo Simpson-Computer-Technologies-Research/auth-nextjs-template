@@ -49,6 +49,7 @@ export const handler = NextAuth({
           email: user.email,
           image: user.image,
           secret: user.secret,
+          permissions: user.permissions,
         };
       },
     }),
@@ -93,6 +94,7 @@ export const handler = NextAuth({
         if (response.ok) {
           const json = await response.json();
           session.user.id = json.user.id;
+          session.user.permissions = json.user.permissions;
         }
       }
 

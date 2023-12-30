@@ -38,26 +38,12 @@ export async function POST(req: NextRequest) {
 
   // Get the user's info
   const secret: string = await sha256(email + bearerSecret);
-  const user = await Prisma.getUser(secret);
+  let user = await Prisma.getUser(secret);
 
   // If the user doesn't exist, create them
   if (!user) {
     const id: string = await genId();
-    await Prisma.createUser(id, name, email, password, image, secret);
-
-    return NextResponse.json(
-      {
-        user: {
-          id,
-          name,
-          email,
-          image,
-          permissions: [0],
-        },
-        ...Response.Success,
-      },
-      { status: 200 }
-    );
+    user = await Prisma.createUser(id, name, email, password, image, secret);
   }
 
   // Return the user's info
@@ -68,6 +54,7 @@ export async function POST(req: NextRequest) {
         name,
         email,
         image,
+        permissions: user.permissions,
       },
       ...Response.Success,
     },

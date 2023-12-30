@@ -4,18 +4,28 @@ import Button from "@/components/Button";
 import { LoadingRelative } from "@/components/Loading";
 import MainWrapper from "@/components/MainWrapper";
 import SignInWithGoogleButton from "@/components/SignInWithGoogleButton";
-import { Status } from "@/lib/types";
 import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
+
+enum Status {
+  IDLE,
+  LOADING,
+}
+
+function getUrlParam(param: string) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
 
 export default function SignInPage() {
   // Get the callback url from the query parameters
   const [callbackUrl, setCallbackUrl] = useState("/");
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const callbackUrl = urlParams.get("callbackUrl");
-    if (callbackUrl) setCallbackUrl(callbackUrl);
+    const callbackUrl = getUrlParam("callbackUrl");
+    if (callbackUrl) {
+      setCallbackUrl(callbackUrl);
+    }
   }, []);
 
   // States for email and password

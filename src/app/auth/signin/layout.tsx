@@ -9,7 +9,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Next Auth Template Sign In",
+  title: "Next Auth Template | Sign In",
   description: "Next Auth Template",
 };
 
