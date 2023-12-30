@@ -10,7 +10,7 @@ export async function generateAuthorizationToken(email: string, time: number) {
 }
 
 export async function generateEmailAuthorizationUrl(email: string) {
-  const baseUrl = process.env.VERCEL_BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const route = `/auth/verify/`;
 
   const time = getTimeForAuthorizationToken(0);
