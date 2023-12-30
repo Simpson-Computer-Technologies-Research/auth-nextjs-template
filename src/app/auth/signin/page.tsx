@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/Button";
+import ErrorMessage from "@/components/ErrorMessage";
 import { LoadingRelative } from "@/components/Loading";
 import MainWrapper from "@/components/MainWrapper";
 import SignInWithGoogleButton from "@/components/SignInWithGoogleButton";
@@ -10,6 +11,9 @@ import { useEffect, useState } from "react";
 enum Status {
   IDLE,
   LOADING,
+  SUCCESS,
+  ERROR,
+  INVALID_CREDENTIALS,
 }
 
 function getUrlParam(param: string) {
@@ -26,6 +30,11 @@ export default function SignInPage() {
     if (callbackUrl) {
       setCallbackUrl(callbackUrl);
     }
+
+    const error = getUrlParam("error");
+    if (error) {
+      setStatus(Status.INVALID_CREDENTIALS);
+    }
   }, []);
 
   // States for email and password
@@ -39,12 +48,18 @@ export default function SignInPage() {
 
     setStatus(Status.LOADING);
 
-    await signIn("credentials", {
+    const res = await signIn("credentials", {
       email,
       password,
       callbackUrl,
       redirect: true,
     });
+
+    if (res?.error) {
+      return setStatus(Status.ERROR);
+    }
+
+    res?.ok ? setStatus(Status.SUCCESS) : setStatus(Status.ERROR);
   };
 
   return (
@@ -81,6 +96,12 @@ export default function SignInPage() {
         </Button>
 
         <SignInWithGoogleButton />
+
+        {status === Status.INVALID_CREDENTIALS && (
+          <ErrorMessage>
+            <p>Invalid credentials.</p>
+          </ErrorMessage>
+        )}
 
         <p className="text-sm">
           Don't have an account?{" "}

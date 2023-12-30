@@ -56,7 +56,7 @@ export const handler = NextAuth({
   ],
 
   callbacks: {
-    async session({ session, token }) {
+    async session({ session }) {
       const bearerSecret: string | undefined = process.env.BEARER_SECRET;
 
       if (!bearerSecret) {
@@ -93,6 +93,9 @@ export const handler = NextAuth({
 
         if (response.ok) {
           const json = await response.json();
+
+          session.user.name = json.user.name;
+          session.user.image = json.user.image;
           session.user.id = json.user.id;
           session.user.permissions = json.user.permissions;
         }

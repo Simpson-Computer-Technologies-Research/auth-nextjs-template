@@ -1,9 +1,11 @@
 "use client";
 
 import Button from "@/components/Button";
+import ErrorMessage from "@/components/ErrorMessage";
 import { LoadingRelative } from "@/components/Loading";
 import MainWrapper from "@/components/MainWrapper";
 import SignInWithGoogleButton from "@/components/SignInWithGoogleButton";
+import SuccessMessage from "@/components/SuccessMessage";
 import { base64decode, sha256 } from "@/lib/crypto";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -144,24 +146,24 @@ export default function SignUpPage() {
 
       {/* If the inputted passwords don't match, return an error */}
       {password !== verificationPassword && (
-        <p className="text-red-500">Passwords do not match.</p>
+        <ErrorMessage>Passwords do not match.</ErrorMessage>
       )}
 
       {/* The sign up was a success - they can now sign in */}
       {status === AuthStatus.SUCCESS && (
-        <p className="text-green-500">
+        <SuccessMessage>
           Your account has been created.{" "}
           <a href="/auth/signin" className="underline hover:text-green-600">
             Sign in
           </a>
-        </p>
+        </SuccessMessage>
       )}
 
       {/* An error has occurred - most likely an internal error */}
-      <p className="text-red-500">
+      <ErrorMessage>
         {status === AuthStatus.ERROR &&
           "Something went wrong. Please try again."}
-      </p>
+      </ErrorMessage>
     </MainWrapper>
   );
 }

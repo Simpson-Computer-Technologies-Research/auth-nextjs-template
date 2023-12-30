@@ -1,9 +1,11 @@
 "use client";
 
 import Button from "@/components/Button";
+import ErrorMessage from "@/components/ErrorMessage";
 import { LoadingRelative } from "@/components/Loading";
 import MainWrapper from "@/components/MainWrapper";
 import SignInWithGoogleButton from "@/components/SignInWithGoogleButton";
+import SuccessMessage from "@/components/SuccessMessage";
 import { base64encode } from "@/lib/crypto";
 import { useState } from "react";
 
@@ -82,25 +84,25 @@ export default function SignUpPage() {
 
       {/* The sign up was a success - they must check their email for verification */}
       {status === SignUpStatus.SUCCESS && (
-        <p className="text-green-500">
+        <SuccessMessage>
           An email has been sent to {email}. Check your inbox for a link to
           create your account.
-        </p>
+        </SuccessMessage>
       )}
 
       {/* An error has occurred - most likely an internal error */}
       {status === SignUpStatus.ERROR && (
-        <p className="text-red-500">An error has occurred. Please try again.</p>
+        <ErrorMessage>An error has occurred. Please try again.</ErrorMessage>
       )}
 
       {/* The user already exists - they must sign in to continue */}
       {status === SignUpStatus.USER_EXISTS && (
-        <p className="text-red-500">
+        <ErrorMessage>
           An user with this email already exists.{" "}
           <a href="/auth/signin" className="underline">
             Sign in
           </a>
-        </p>
+        </ErrorMessage>
       )}
     </MainWrapper>
   );
