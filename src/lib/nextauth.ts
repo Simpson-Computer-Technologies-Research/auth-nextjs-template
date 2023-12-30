@@ -1,8 +1,9 @@
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { sha256 } from "./crypto";
+import { base64encode, sha256 } from "./crypto";
 import Credentials from "next-auth/providers/credentials";
 import { Prisma } from "./prisma";
+import { NextRequest } from "next/server";
 
 export const handler = NextAuth({
   pages: {
@@ -82,14 +83,13 @@ export const handler = NextAuth({
       if (secret && email && name) {
         const res = await import("@/app/api/users/route");
         const response = await res.POST({
-          // @ts-ignore
-          headers: {},
+          // The request body
           json: async () => ({
             name,
             email,
             image,
           }),
-        });
+        } as NextRequest);
 
         if (response.ok) {
           const json = await response.json();
