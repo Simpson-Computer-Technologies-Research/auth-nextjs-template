@@ -9,13 +9,15 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
-  password  String
-  image     String
-  secret    String   @unique
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  email       String   @unique
+  password    String
+  image       String
+  secret      String   @unique
+  permissions Int[]
 }
 
 // npx prisma migrate dev --name init

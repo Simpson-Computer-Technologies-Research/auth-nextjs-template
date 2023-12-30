@@ -1,7 +1,7 @@
 import { Prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { Response } from "@/lib/responses";
-import { genId } from "@/lib/crypto";
+import { genId, sha256 } from "@/lib/crypto";
 
 /**
  * Get all of the users
@@ -23,27 +23,27 @@ export async function GET(req: NextRequest) {
  * @param req The request object
  * @returns The response object
  */
-export async function PUT(req: NextRequest) {
-  // Get the user's bearer token from the headers
-  const secret = req.headers.get("Authorization");
-  if (!secret) {
-    return NextResponse.json(Response.InvalidHeaders, { status: 400 });
-  }
-
+export async function POST(req: NextRequest) {
   // Get the user's info from the request body
-  const { name, email, image } = await req.json();
-  if (!name || !email || !image) {
+  let { name, email, image, password } = await req.json();
+  if (!email) {
     return NextResponse.json(Response.InvalidBody, { status: 400 });
   }
 
+  // Generate a new user secret
+  const bearerSecret = process.env.BEARER_SECRET;
+  if (!bearerSecret) {
+    return NextResponse.json(Response.InternalError, { status: 500 });
+  }
+
   // Get the user's info
+  const secret: string = await sha256(email + bearerSecret);
   const user = await Prisma.getUser(secret);
 
   // If the user doesn't exist, create them
   if (!user) {
     const id: string = await genId();
-
-    await Prisma.createUser(id, name, email, image, secret);
+    await Prisma.createUser(id, name, email, password, image, secret);
 
     return NextResponse.json(
       {
@@ -52,23 +52,12 @@ export async function PUT(req: NextRequest) {
           name,
           email,
           image,
-          permissions: [],
-          purchasedEventIds: [],
+          permissions: [0],
         },
         ...Response.Success,
       },
       { status: 200 }
     );
-  }
-
-  // If the user's name has changed, update it
-  if (user.name !== name) {
-    await Prisma.updateUserName(secret, name);
-  }
-
-  // If the user's image has changed, update it
-  if (user.image !== image) {
-    await Prisma.updateUserImage(secret, image);
   }
 
   // Return the user's info

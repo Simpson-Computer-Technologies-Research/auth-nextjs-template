@@ -5,7 +5,6 @@ import LoadingCenter from "@/components/Loading";
 import MainWrapper from "@/components/MainWrapper";
 import SignOutButton from "@/components/SignOutButton";
 import { SessionProvider, useSession } from "next-auth/react";
-import Link from "next/link";
 
 export default function Home() {
   return (
@@ -33,9 +32,13 @@ function Main(): JSX.Element {
   }
 
   return (
-    <MainWrapper>
-      <Button link={true} href="/api/auth/signin">
+    <MainWrapper className="gap-2 w-full">
+      <h1 className="text-6xl font-thin my-7 uppercase">Next Auth Template</h1>
+      <Button href="/auth/signin" className="w-full">
         Sign in
+      </Button>
+      <Button href="/auth/signup" className="w-full">
+        Sign up
       </Button>
     </MainWrapper>
   );

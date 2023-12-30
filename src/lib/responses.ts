@@ -13,6 +13,18 @@ export class Response {
     };
   }
 
+  static get InvalidToken() {
+    const id = base64encode(Math.random().toString());
+    const timestamp = Date.now();
+
+    return {
+      success: false,
+      message: "Invalid authorization token",
+      timestamp,
+      id,
+    };
+  }
+
   static get InternalError() {
     const id = base64encode(Math.random().toString());
     const timestamp = Date.now();

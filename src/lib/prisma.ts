@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { User } from "next-auth";
+import { genId } from "./crypto";
 
 export class Prisma extends PrismaClient {
   constructor() {
@@ -126,7 +127,15 @@ export class Prisma extends PrismaClient {
    * @returns The user's data
    */
   public static readonly getUsers = async (): Promise<(User | null)[]> => {
-    return await Prisma.findMany("user", {}); // exclude the user secret
+    return await Prisma.findMany("user", {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        permissions: true,
+      },
+    }); // exclude the user secret
   };
 
   /**
@@ -157,18 +166,61 @@ export class Prisma extends PrismaClient {
     id: string,
     name: string,
     email: string,
+    password: string,
     image: string,
     secret: string
   ): Promise<User> => {
+    const DEFAULT_USER_NAME = "User";
+    const DEFAULT_USER_IMAGE = "/images/default-pfp.png";
+    const generatedPassword = await genId();
+
     return await Prisma.create("user", {
       data: {
         id,
-        name,
-        email,
         secret,
-        image,
-        purchasedEventIds: [],
+        email,
+        password: password || generatedPassword,
+        name: name || DEFAULT_USER_NAME,
+        image: image || DEFAULT_USER_IMAGE,
         permissions: [0],
+      },
+    });
+  };
+
+  /**
+   * Update the user's name
+   * @param name The user's name
+   * @param userSecret The user's secret
+   */
+  public static readonly updateUserName = async (
+    name: string,
+    userSecret: string
+  ): Promise<User> => {
+    return await Prisma.update("user", {
+      where: {
+        secret: userSecret,
+      },
+      data: {
+        name,
+      },
+    });
+  };
+
+  /**
+   * Update the user's image
+   * @param image The user's image
+   * @param userSecret The user's secret
+   */
+  public static readonly updateUserImage = async (
+    image: string,
+    userSecret: string
+  ): Promise<User> => {
+    return await Prisma.update("user", {
+      where: {
+        secret: userSecret,
+      },
+      data: {
+        image,
       },
     });
   };
