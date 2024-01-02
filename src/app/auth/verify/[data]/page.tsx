@@ -66,7 +66,7 @@ export default function SignUpPage() {
         return setStatus(AuthStatus.INVALID_TOKEN);
       }
     });
-  });
+  }, [status, path]);
 
   // When the user submits the form, send an api request to create their account
   const [password, setPassword] = useState("");
